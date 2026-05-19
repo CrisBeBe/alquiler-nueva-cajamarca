@@ -26,6 +26,26 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
 
+// Test endpoint
+app.get('/test-debug', async (req, res) => {
+  const debug = {};
+  try {
+    await sequelize.authenticate();
+    debug.db = 'Connected';
+  } catch (err) {
+    debug.db = 'Error: ' + err.message;
+  }
+  
+  try {
+    const { sendEmail } = require('./utils/mailer');
+    debug.mailer = 'Imported';
+  } catch (err) {
+    debug.mailer = 'Error: ' + err.message;
+  }
+
+  res.json(debug);
+});
+
 // API Routes
 app.use('/api', routes);
 

@@ -1,8 +1,9 @@
 {
   "version": 2,
+  "name": "alquiler-nueva-cajamarca",
   "builds": [
     {
-      "src": "backend/src/app.js",
+      "src": "api/index.js",
       "use": "@vercel/node"
     },
     {
@@ -16,11 +17,15 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "backend/src/app.js"
+      "destination": "api/index.js"
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": "/frontend/assets/$1"
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/frontend/index.html"
     }
   ]
 }

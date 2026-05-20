@@ -35,6 +35,14 @@ const Anuncio = sequelize.define('Anuncio', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  latitud: {
+    type: DataTypes.DECIMAL(10, 8),
+    allowNull: true,
+  },
+  longitud: {
+    type: DataTypes.DECIMAL(11, 8),
+    allowNull: true,
+  },
   amenidades: {
     type: DataTypes.JSON,
     allowNull: true,

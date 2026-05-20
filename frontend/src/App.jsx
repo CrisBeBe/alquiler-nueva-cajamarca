@@ -14,6 +14,8 @@ import Perfil from './pages/Perfil';
 import FAQ from './pages/FAQ';
 import Contacto from './pages/Contacto';
 import TerminosPrivacidad from './pages/TerminosPrivacidad';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -57,6 +59,8 @@ function App() {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
         <Route path="registro" element={<Registro />} />
         <Route path="verificar-correo" element={<VerificarCorreo />} />
         <Route path="anuncio/:id" element={<AnuncioDetalle />} />

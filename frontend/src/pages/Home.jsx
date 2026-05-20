@@ -24,9 +24,9 @@ const Home = () => {
         </div>
         
         <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-6 tracking-tighter animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          Tu próximo hogar <br />
+          Alquiler de casas <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-emerald-500">
-            está aquí mismo.
+            en Nueva Cajamarca.
           </span>
         </h1>
         

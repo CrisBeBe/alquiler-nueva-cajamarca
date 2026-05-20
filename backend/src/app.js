@@ -22,12 +22,13 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Health check
-app.get('/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
 
 // API Routes
 app.use('/api', routes);
+app.use('/', routes); // Consistency with api/ folder setup
 
 // Error Handling
 app.use(errorHandler);

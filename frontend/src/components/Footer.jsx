@@ -7,18 +7,18 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">Alquiler NC</h3>
-            <p className="text-gray-400">
-              La plataforma líder en alquileres en Nueva Cajamarca. Encuentra el lugar perfecto para ti.
+            <h3 className="text-xl font-bold mb-4 text-primary-400">Alquiler NC</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              La plataforma #1 en <strong>alquiler de casas, cuartos y departamentos en Nueva Cajamarca</strong>, San Martín. Conectamos directamente a dueños con inquilinos sin intermediarios.
             </p>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">Enlaces Rápidos</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li><Link to="/" className="hover:text-white transition">Inicio</Link></li>
-              <li><Link to="/login" className="hover:text-white transition">Ingresar</Link></li>
-              <li><Link to="/registro" className="hover:text-white transition">Registrarse</Link></li>
-              <li><Link to="/dashboard/publicar" className="hover:text-white transition">Publicar</Link></li>
+            <h4 className="font-semibold mb-4 text-white">Zonas Populares</h4>
+            <ul className="space-y-2 text-gray-400 text-sm">
+              <li>Centro de Nueva Cajamarca</li>
+              <li>Cerca a la Universidad (UNSM)</li>
+              <li>Cerca al Mercado Central</li>
+              <li>Zona Residencial</li>
             </ul>
           </div>
           <div>

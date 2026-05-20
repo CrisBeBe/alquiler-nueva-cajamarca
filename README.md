@@ -1,104 +1,201 @@
-# Alquiler Nueva Cajamarca 🏠
+# 🏡 Alquiler Nueva Cajamarca (Alquiler NC)
 
-Plataforma web moderna para la publicación y búsqueda de alquileres (habitaciones, casas, departamentos y locales) en la ciudad de Nueva Cajamarca.
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![React](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB.svg)
+![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933.svg)
+![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791.svg)
 
-## 🚀 Características
+**Alquiler NC** es una plataforma web moderna diseñada para facilitar la conexión entre propietarios que desean alquilar sus inmuebles (casas, cuartos, departamentos, locales) y personas que buscan alquileres en la ciudad de **Nueva Cajamarca, San Martín, Perú**.
 
-- **Gestión de Anuncios**: Los usuarios pueden publicar, editar y pausar sus anuncios.
-- **Búsqueda Avanzada**: Filtros por tipo, zona, precio y palabras clave.
-- **Galería de Fotos**: Soporte para múltiples imágenes por anuncio (Cloudinary).
-- **Contacto Directo**: Enlaces rápidos a WhatsApp y llamadas telefónicas.
-- **Panel de Usuario**: Gestión simplificada de los anuncios propios.
-- **Seguridad**: Autenticación mediante JWT y protección de rutas.
+---
 
-## 🛠️ Tecnologías
+## 🏗️ Arquitectura del Sistema y Tecnologías
 
-- **Backend**: Node.js, Express, PostgreSQL, Sequelize ORM.
-- **Frontend**: React (Vite), Tailwind CSS, React Hook Form, Axios.
-- **Servicios Externos**: Cloudinary (imágenes), Gemini AI (opcional para descripciones).
+El proyecto sigue una arquitectura **Monorepo** que integra un frontend interactivo y una API REST robusta, desplegada en un entorno Serverless.
 
-## 📋 Requisitos Previos
+### Frontend (Cliente)
+*   **Core:** React.js 18
+*   **Build Tool:** Vite (Ultra rápido y optimizado)
+*   **Estilos:** Tailwind CSS (Diseño responsive y moderno)
+*   **Enrutamiento:** React Router DOM v6
+*   **Gestión de Estado:** Context API (`AuthContext`, `AnuncioContext`)
+*   **Peticiones HTTP:** Axios (Con interceptores para validación de tokens JWT)
 
-- **Node.js** (v18 o superior)
-- **PostgreSQL** (base de datos)
-- Cuenta en **Cloudinary** (para subida de imágenes)
+### Backend (Servidor API)
+*   **Core:** Node.js con Express.js
+*   **Arquitectura:** Patrón Controlador-Servicio-Repositorio (MVC escalable)
+*   **ORM:** Sequelize (Gestión de base de datos relacional)
+*   **Seguridad:** 
+    *   `bcryptjs` (Hashing de contraseñas)
+    *   `jsonwebtoken` (Autenticación sin estado)
+    *   `helmet` & `cors` (Protección de cabeceras HTTP)
+*   **Gestión de Archivos:** Multer
 
-## ⚙️ Configuración del Proyecto
+### Infraestructura y Despliegue (Producción)
+*   **Hosting Global:** [Vercel](https://vercel.com/) (Despliegue Serverless de frontend y backend unificados)
+*   **Base de Datos:** [Neon.tech](https://neon.tech/) (PostgreSQL Serverless, escalable y en la nube)
+*   **Almacenamiento de Imágenes:** [Cloudinary](https://cloudinary.com/) (Optimización y entrega de imágenes a través de CDN)
+*   **Servicio de Correos:** Nodemailer (SMTP a través de Gmail para verificación de cuentas y recuperación de contraseñas)
 
-### 1. Clonar el repositorio
-```bash
-git clone <url-del-repositorio>
-cd alquiler_nuevacajamrca
+---
+
+## 📁 Estructura del Proyecto
+
+```text
+alquiler_nuevacajamrca/
+├── api/                    # Servidor Backend (Express)
+│   ├── _src/               # Código fuente del API
+│   │   ├── config/         # Conexiones (DB, Cloudinary)
+│   │   ├── controllers/    # Lógica de manejo de peticiones
+│   │   ├── middlewares/    # Autenticación, validación, manejo de errores
+│   │   ├── models/         # Modelos de Base de Datos (Sequelize)
+│   │   ├── repositories/   # Capa de abstracción de datos
+│   │   ├── routes/         # Definición de endpoints API
+│   │   ├── services/       # Lógica de negocio (Auth, Anuncios)
+│   │   └── utils/          # Helpers (Mailer, JWT, Paginación)
+│   └── index.js            # Punto de entrada Serverless (Vercel)
+│
+├── frontend/               # Aplicación Cliente (React)
+│   ├── src/                
+│   │   ├── components/     # Componentes UI reutilizables
+│   │   ├── context/        # Estados globales (Auth)
+│   │   ├── pages/          # Vistas principales (Home, Login, Dashboard)
+│   │   └── services/       # Integración con el API (Axios)
+│   └── vite.config.js      # Configuración de compilación
+│
+├── public/                 # Archivos estáticos y Frontend compilado (dist)
+├── vercel.json             # Configuración oficial de despliegue
+└── DEPLOYMENT_NOTES.md     # Notas técnicas de resolución de problemas
 ```
 
-### 2. Configurar el Backend
-```bash
-cd backend
-npm install
-```
-Crea un archivo `.env` basado en `.env.example` y completa tus credenciales:
-```env
-PORT=3000
-DB_NAME=alquiler_db
-DB_USER=postgres
-DB_PASSWORD=tu_password
-DB_HOST=localhost
-JWT_SECRET=una_clave_secreta_muy_larga
-CLOUDINARY_CLOUD_NAME=tu_cloud_name
-CLOUDINARY_API_KEY=tu_api_key
-CLOUDINARY_API_SECRET=tu_api_secret
+---
+
+## ⚙️ Configuración y Variables de Entorno
+
+Para que el proyecto funcione en cualquier entorno (Local o Producción), requiere las siguientes variables de entorno. 
+
+### Variables para Vercel (Producción)
+En el panel de Vercel (`Settings > Environment Variables`), configura:
+
+```ini
+# Base de Datos (Neon)
+DATABASE_URL="postgresql://usuario:password@host.neon.tech/neondb?sslmode=require"
+
+# Seguridad
+JWT_SECRET="clave_secreta_muy_segura_2026"
+NODE_ENV="production"
+
+# Frontend Integration
+VITE_API_URL="/api"
+
+# Cloudinary (Imágenes)
+CLOUDINARY_CLOUD_NAME="tu_cloud_name"
+CLOUDINARY_API_KEY="tu_api_key"
+CLOUDINARY_API_SECRET="tu_api_secret"
+
+# SMTP (Correos)
+MAIL_HOST="smtp.gmail.com"
+MAIL_PORT="587"
+MAIL_SECURE="false"
+MAIL_USER="tu_correo@gmail.com"
+MAIL_PASS="tu_contraseña_de_aplicacion"
+MAIL_FROM_NAME="Alquiler Nueva Cajamarca"
+MAIL_FROM_ADDRESS="no-reply@alquilernc.com"
 ```
 
-### 3. Configurar el Frontend
-```bash
-cd ../frontend
-npm install
-```
-Crea un archivo `.env` (opcional si usas los puertos por defecto):
-```env
-VITE_API_URL=http://localhost:3000/api
-```
+---
 
-## 🚀 Ejecución
+## 📖 Documentación Detallada
 
-### Iniciar Backend
-```bash
-cd backend
-npm run dev
-```
-*Nota: En el primer inicio, las tablas se crearán automáticamente gracias a `sequelize.sync`.*
+Para obtener más información sobre el funcionamiento interno del proyecto, consulta nuestra documentación técnica:
 
-### Poblar Base de Datos (Opcional)
-Si deseas tener datos de prueba iniciales:
-```bash
-cd backend
-npm run seed
-```
+*   **[Índice de Documentación](./docs/README.md)**
+*   **[Backend (API)](./docs/backend/index.md)**
+*   **[Frontend (Cliente)](./docs/frontend/index.md)**
 
-### Iniciar Frontend
+---
+
+## 🚀 Guía de Despliegue (Deployment)
+
+El proyecto está configurado para unificar el Frontend y Backend en Vercel usando "Rewrites" (ver `vercel.json`).
+
+### Pasos para actualizar la aplicación web:
+
+Si realizas cambios en el código de React (carpeta `frontend/`), debes compilarlo antes de subirlo:
+
+1.  Abre tu terminal y navega a la carpeta frontend:
+    ```bash
+    cd frontend
+    ```
+2.  Construye la versión optimizada de producción (asegurando la ruta de la API):
+    ```bash
+    VITE_API_URL=/api npm run build
+    ```
+3.  Copia los archivos compilados a la raíz para que Vercel los sirva:
+    ```bash
+    cp -r dist/* ../public/
+    cp -r dist/assets ../
+    ```
+4.  Sube todo a Vercel:
+    ```bash
+    cd ..
+    vercel --prod
+    ```
+
+---
+
+## 🛡️ Seguridad y Funcionalidades Clave
+
+1.  **Protección de Rutas:** El frontend utiliza componentes de "Rutas Protegidas" para evitar acceso no autorizado al Dashboard.
+2.  **Autenticación JWT:** El backend emite tokens JWT seguros con firmas verificadas. Las contraseñas nunca se guardan en texto plano (`bcrypt`).
+3.  **Prevención CORS:** Configurado para aceptar peticiones unificadas en producción (mismo dominio), evitando ataques de origen cruzado.
+4.  **Auto-Sincronización:** En producción, el sistema detecta tablas faltantes en PostgreSQL y ejecuta `sequelize.sync()`, asegurando además que exista un usuario `admin` por defecto.
+
+---
+
+## 🧪 Pruebas Automatizadas (E2E) con Playwright
+
+El proyecto cuenta con una suite de pruebas de extremo a extremo (End-to-End) que automatiza la navegación y verificación de las funciones principales en la web real.
+
+### Requisitos previos
+1.  **Navegador:** Tener instalado **Google Chrome** en tu sistema.
+2.  **Dependencias:** Asegúrate de haber instalado las dependencias en la carpeta frontend (`npm install`).
+
+### Cómo ejecutar los tests
+Navega a la carpeta frontend y ejecuta el comando de prueba:
+
 ```bash
 cd frontend
-npm run dev
+# Ejecutar tests en modo invisible (rápido)
+npx playwright test tests/full_flow.spec.js
+
+# Ver al robot ejecutando la prueba en vivo (modo headed)
+npx playwright test tests/full_flow.spec.js --headed
 ```
 
-## 📖 Documentación de la API
+**¿Qué cubren los tests?**
+*   Exploración de la página de inicio y conteo de anuncios.
+*   Uso del buscador y filtros.
+*   Navegación al detalle de un anuncio.
+*   Flujo de registro y carga de la página de Login.
+*   Inicio de sesión automático con credenciales de administrador.
+*   Verificación de acceso al Dashboard y sección de publicación.
+*   Gestión de perfil y cierre de sesión seguro.
 
-La API está organizada bajo el prefijo `/api`. Algunos endpoints principales:
+---
 
-- `POST /api/auth/registro`: Registro de nuevos usuarios.
-- `POST /api/auth/login`: Inicio de sesión (retorna JWT).
-- `GET /api/anuncios`: Lista anuncios públicos con filtros.
-- `POST /api/anuncios`: Crea un nuevo anuncio (requiere Auth).
-- `GET /api/anuncios/vendedor/mis-anuncios`: Lista anuncios del usuario autenticado.
+## 🛠️ Correcciones y Mejoras Recientes
 
-## 🤝 Contribución
+1.  **Integridad en Eliminación de Cuentas:** Se implementó una lógica de transacción en el backend para asegurar que, cuando un usuario desactiva su cuenta, todos sus anuncios asociados se marquen automáticamente como `eliminado`, evitando anuncios "huérfanos" en la plataforma.
+2.  **Optimización de Búsqueda:** Se ajustó el buscador para ignorar mayúsculas/minúsculas y mejorar la velocidad de filtrado.
+3.  **Configuración Multi-Navegador:** Playwright configurado para usar el motor de Chrome instalado en el sistema, ideal para entornos de desarrollo modernos.
 
-1. Haz un Fork del proyecto.
-2. Crea una rama para tu característica (`git checkout -b feature/NuevaCaracteristica`).
-3. Haz commit de tus cambios (`git commit -m 'Añadir Nueva Caracteristica'`).
-4. Push a la rama (`git push origin feature/NuevaCaracteristica`).
-5. Abre un Pull Request.
+---
 
-## 📄 Licencia
+## 📈 Estrategia SEO
+ (Optimización para Motores de Búsqueda)
 
-Este proyecto es para fines educativos y portafolio profesional.
+Para posicionar la web en Google bajo la búsqueda **"alquiler de casas en nueva cajamarca"**, se han implementado y se recomiendan las siguientes prácticas (Ver sección de SEO en el documento para el paso a paso).
+
+*Desarrollado con ❤️ para digitalizar el sector inmobiliario en Nueva Cajamarca.*

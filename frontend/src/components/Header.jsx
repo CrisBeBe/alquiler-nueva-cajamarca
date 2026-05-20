@@ -18,15 +18,19 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
+    const confirmed = window.confirm('¿Estás seguro de que deseas cerrar sesión?');
+    if (confirmed) {
+      logout();
+      navigate('/');
+      setIsMenuOpen(false);
+    }
   };
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'}`}>
       <div className="container mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="flex items-center group">
+        <Link to="/" className="flex items-center group" onClick={() => setIsMenuOpen(false)}>
           <div className="bg-primary-600 p-2 rounded-xl mr-3 shadow-lg group-hover:rotate-12 transition-transform duration-300">
             <HiOutlinePlusCircle className="text-white text-2xl" />
           </div>
@@ -83,13 +87,23 @@ const Header = () => {
           )}
         </nav>
 
-        {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden p-2 rounded-xl bg-slate-100 text-slate-600 text-2xl" 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <HiX /> : <HiMenu />}
-        </button>
+        {/* Mobile Buttons (Visible only on small screens) */}
+        <div className="flex md:hidden items-center gap-3">
+          <Link 
+            to="/dashboard/publicar" 
+            className="bg-primary-600 text-white px-3 py-2 rounded-lg text-xs font-black shadow-md flex items-center"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <HiOutlinePlusCircle className="mr-1 text-base" /> Publicar
+          </Link>
+          
+          <button 
+            className="p-2 rounded-lg bg-slate-100 text-slate-600 text-xl" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <HiX /> : <HiMenu />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -103,7 +117,8 @@ const Header = () => {
               <Link to="/admin" className="text-lg font-bold text-amber-500" onClick={() => setIsMenuOpen(false)}>Panel Admin</Link>
             )}
             <Link to="/dashboard" className="text-lg font-bold text-slate-700" onClick={() => setIsMenuOpen(false)}>Mi Dashboard</Link>
-            <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="text-left text-lg font-bold text-red-500">Cerrar Sesión</button>
+            <Link to="/perfil" className="text-lg font-bold text-slate-700" onClick={() => setIsMenuOpen(false)}>Mi Perfil</Link>
+            <button onClick={handleLogout} className="text-left text-lg font-bold text-red-500">Cerrar Sesión</button>
           </>
         ) : (
           <>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://alquilernc.vercel.app/sitemap.xml

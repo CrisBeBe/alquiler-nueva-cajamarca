@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['brand-logo-nc.svg', 'qr_apoyo.jpeg', 'robots.txt'],
       manifest: {
-        name: 'AlquilerNC - Nueva Cajamarca',
-        short_name: 'AlquilerNC',
-        description: 'Encuentra los mejores alquileres en Nueva Cajamarca',
+        name: 'Alquiler NC - Nueva Cajamarca',
+        short_name: 'Alquiler NC',
+        description: 'Alquila casas, cuartos y locales en Nueva Cajamarca, San Martín. Encuentra los mejores precios y contacta directamente con los dueños.',
         theme_color: '#16a34a',
         icons: [
           {

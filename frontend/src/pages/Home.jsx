@@ -40,7 +40,7 @@ const Home = () => {
       <section className="bg-slate-50 rounded-[3rem] p-12 border border-slate-100 text-center space-y-6">
         <h2 className="text-3xl font-black text-slate-800 tracking-tight">La mejor plataforma de alquileres en Nueva Cajamarca</h2>
         <p className="text-slate-600 max-w-3xl mx-auto leading-relaxed">
-          ¿Buscas un lugar para vivir? En <strong>AlquilerNC</strong> te ayudamos a encontrar el <strong>alquiler de cuartos</strong>, 
+          ¿Buscas un lugar para vivir? En <strong>Alquiler NC</strong> te ayudamos a encontrar el <strong>alquiler de cuartos</strong>, 
           <strong> departamentos</strong> y <strong>casas en Nueva Cajamarca</strong> de manera rápida y segura. 
           Nuestra plataforma conecta directamente a inquilinos con propietarios sin intermediarios. 
           Si eres dueño de una propiedad, puedes <strong>publicar tu anuncio de alquiler gratis</strong> y llegar a cientos de personas interesadas.

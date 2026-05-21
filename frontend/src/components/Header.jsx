@@ -31,11 +31,11 @@ const Header = () => {
       <div className="container mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center group" onClick={() => setIsMenuOpen(false)}>
-          <div className="bg-primary-600 p-2 rounded-xl mr-3 shadow-lg group-hover:rotate-12 transition-transform duration-300">
-            <HiOutlinePlusCircle className="text-white text-2xl" />
+          <div className="bg-white p-1 rounded-xl mr-3 shadow-lg group-hover:rotate-12 transition-transform duration-300">
+            <img src="/brand-logo-nc.svg" alt="Alquiler NC" className="w-8 h-8" />
           </div>
           <span className={`text-2xl font-black tracking-tighter transition-colors ${scrolled ? 'text-slate-900' : 'text-slate-900'}`}>
-            Alquiler<span className="text-primary-600">NC</span>
+            Alquiler <span className="text-primary-600">NC</span>
           </span>
         </Link>
 

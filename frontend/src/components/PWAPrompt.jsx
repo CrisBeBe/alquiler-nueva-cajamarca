@@ -49,7 +49,7 @@ const PWAPrompt = () => {
             <img src="/brand-logo-nc.svg" alt="Logo" className="w-8 h-8" />
           </div>
           <div>
-            <h3 className="font-black text-lg tracking-tight">Instalar AlquilerNC</h3>
+            <h3 className="font-black text-lg tracking-tight">Instalar Alquiler NC</h3>
             <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">¡Llévanos en tu pantalla!</p>
           </div>
         </div>

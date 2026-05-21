@@ -10,7 +10,7 @@ class AnuncioRepository {
     const options = {};
     if (includeRelations) {
       options.include = [
-        { model: User, as: 'usuario', attributes: ['id', 'nombre_completo', 'email', 'telefono', 'foto_perfil_url'] },
+        { model: User, as: 'usuario', attributes: ['id', 'nombre_completo', 'email', 'telefono', 'foto_perfil_url', 'is_verified_owner'] },
         { model: FotoAnuncio, as: 'fotos', attributes: ['id', 'url_foto', 'orden_presentacion'] }
       ];
       options.order = [
@@ -43,6 +43,7 @@ class AnuncioRepository {
       limit: pagination.limit,
       offset: pagination.offset,
       include: [
+        { model: User, as: 'usuario', attributes: ['id', 'nombre_completo', 'is_verified_owner'] },
         { model: FotoAnuncio, as: 'fotos', attributes: ['id', 'url_foto', 'orden_presentacion'] }
       ],
       order: [

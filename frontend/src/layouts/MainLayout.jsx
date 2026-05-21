@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import PWAPrompt from '../components/PWAPrompt';
 
 const MainLayout = () => {
   return (
@@ -9,6 +10,7 @@ const MainLayout = () => {
       <main className="flex-grow container mx-auto px-6 pt-24 pb-12">
         <Outlet />
       </main>
+      <PWAPrompt />
       <Footer />
     </div>
   );

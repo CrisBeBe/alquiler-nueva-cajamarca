@@ -24,16 +24,36 @@ const Home = () => {
         </div>
         
         <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-6 tracking-tighter animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          Alquiler de casas <br />
+          Alquiler de casas y cuartos <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-emerald-500">
             en Nueva Cajamarca.
           </span>
         </h1>
         
         <p className="text-lg text-slate-500 max-w-xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          Habitaciones, departamentos y casas con la mejor ubicación <br className="hidden md:block" />
-          en el corazón de Nueva Cajamarca.
+          Encuentra <strong>habitaciones, departamentos y casas</strong> con la mejor ubicación <br className="hidden md:block" />
+          en el corazón de Nueva Cajamarca. Publica gratis hoy mismo.
         </p>
+      </section>
+
+      {/* SEO Content Section */}
+      <section className="bg-slate-50 rounded-[3rem] p-12 border border-slate-100 text-center space-y-6">
+        <h2 className="text-3xl font-black text-slate-800 tracking-tight">La mejor plataforma de alquileres en Nueva Cajamarca</h2>
+        <p className="text-slate-600 max-w-3xl mx-auto leading-relaxed">
+          ¿Buscas un lugar para vivir? En <strong>AlquilerNC</strong> te ayudamos a encontrar el <strong>alquiler de cuartos</strong>, 
+          <strong> departamentos</strong> y <strong>casas en Nueva Cajamarca</strong> de manera rápida y segura. 
+          Nuestra plataforma conecta directamente a inquilinos con propietarios sin intermediarios. 
+          Si eres dueño de una propiedad, puedes <strong>publicar tu anuncio de alquiler gratis</strong> y llegar a cientos de personas interesadas.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4 text-xs font-bold text-slate-400 uppercase tracking-widest pt-4">
+          <span>Alquiler de Cuartos</span>
+          <span className="w-1.5 h-1.5 bg-primary-300 rounded-full my-auto"></span>
+          <span>Departamentos en Nueva Cajamarca</span>
+          <span className="w-1.5 h-1.5 bg-primary-300 rounded-full my-auto"></span>
+          <span>Casas de Alquiler</span>
+          <span className="w-1.5 h-1.5 bg-primary-300 rounded-full my-auto"></span>
+          <span>Locales Comerciales</span>
+        </div>
       </section>
 
       {/* Search & Filters Section */}

@@ -19,11 +19,14 @@ if (process.env.NODE_ENV === 'production') {
       console.log('Database synced in serverless mode');
       // Manual schema updates
       try {
+        await sequelize.query('ALTER TABLE "usuarios" ADD COLUMN IF NOT EXISTS "is_verified_owner" BOOLEAN DEFAULT false;');
+        await sequelize.query('ALTER TABLE "anuncios" ADD COLUMN IF NOT EXISTS "latitud" DECIMAL(10, 8);');
+        await sequelize.query('ALTER TABLE "anuncios" ADD COLUMN IF NOT EXISTS "longitud" DECIMAL(11, 8);');
         await sequelize.query('ALTER TABLE "anuncios" ADD COLUMN IF NOT EXISTS "featured_at" TIMESTAMP;');
         await sequelize.query('ALTER TABLE "anuncios" ADD COLUMN IF NOT EXISTS "featured_until" TIMESTAMP;');
         await sequelize.query('ALTER TABLE "pagos_solicitudes" ALTER COLUMN "anuncio_id" DROP NOT NULL;');
       } catch (e) {
-        console.log('Schema updates skipped or failed');
+        console.error('Schema updates error:', e);
       }
 
       // Create admin user if it doesn't exist

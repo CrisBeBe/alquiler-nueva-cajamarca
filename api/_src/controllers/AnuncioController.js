@@ -46,6 +46,10 @@ class AnuncioController {
         }
       }
 
+      // Parse coordinates if they exist
+      if (data.latitud) data.latitud = parseFloat(data.latitud);
+      if (data.longitud) data.longitud = parseFloat(data.longitud);
+
       // photos are expected from uploadMiddleware (memory storage buffers)
       const photoBuffers = req.files ? req.files.map(file => file.buffer) : [];
       

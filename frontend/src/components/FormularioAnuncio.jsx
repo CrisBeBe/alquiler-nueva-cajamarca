@@ -4,6 +4,9 @@ import * as yup from 'yup';
 import { HiCloudUpload, HiX, HiInformationCircle, HiLocationMarker, HiPhone } from 'react-icons/hi';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MapPicker from './MapPicker';
+import { processImageForUpload } from '../utils/imageHelper';
+import { toast } from 'react-toastify';
 
 const schema = yup.object({
   titulo: yup.string().min(5, 'El título debe tener al menos 5 caracteres').required('El título es requerido'),
@@ -12,6 +15,8 @@ const schema = yup.object({
   tipo: yup.string().required('El tipo es requerido'),
   zona: yup.string().required('La zona es requerida'),
   direccion: yup.string().required('La dirección es requerida'),
+  latitud: yup.number().nullable(),
+  longitud: yup.number().nullable(),
   metodo_contacto: yup.string().required('El método de contacto es requerido'),
   numero_contacto: yup.string().when('metodo_contacto', {
     is: (val) => val === 'whatsapp' || val === 'multicanal',
@@ -35,8 +40,9 @@ const FormularioAnuncio = ({ initialData, onSubmit, loading }) => {
   const navigate = useNavigate();
   const [fotos, setFotos] = useState(initialData?.fotos || []);
   const [fotosFiles, setFotosFiles] = useState([]);
+  const [compressing, setCompressing] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset, watch } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm({
     resolver: yupResolver(schema),
     defaultValues: initialData || {
       tipo: 'cuarto',
@@ -47,6 +53,13 @@ const FormularioAnuncio = ({ initialData, onSubmit, loading }) => {
   });
 
   const selectedMetodo = watch('metodo_contacto');
+  const lat = watch('latitud');
+  const lng = watch('longitud');
+
+  const handleMapChange = (lat, lng) => {
+    setValue('latitud', lat);
+    setValue('longitud', lng);
+  };
 
   useEffect(() => {
     if (initialData) {
@@ -55,21 +68,71 @@ const FormularioAnuncio = ({ initialData, onSubmit, loading }) => {
     }
   }, [initialData, reset]);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
-    setFotosFiles([...fotosFiles, ...files]);
-    
-    const newPreviews = files.map(file => ({
-      url: URL.createObjectURL(file),
-      isNew: true
+    if (files.length === 0) return;
+
+    // 0. Validar límite de 10 imágenes
+    const totalActual = fotos.length;
+    const porCargar = files.length;
+    if (totalActual + porCargar > 10) {
+      toast.error(`Solo puedes subir un máximo de 10 fotos. (Ya tienes ${totalActual})`);
+      return;
+    }
+
+    // 1. Mostrar previews instantáneos con loading
+    const newPhotos = files.map(file => ({
+      id: Math.random().toString(36).substr(2, 9),
+      url: URL.createObjectURL(file), 
+      file,
+      isNew: true,
+      loading: true
     }));
-    setFotos([...fotos, ...newPreviews]);
+
+    setFotos(prev => [...prev, ...newPhotos]);
+
+    // 2. Procesar TODAS en paralelo para máxima velocidad
+    try {
+      const processingPromises = newPhotos.map(async (photo) => {
+        try {
+          const { file: processedFile, preview } = await processImageForUpload(photo.file);
+          
+          setFotosFiles(prev => [...prev, processedFile]);
+          setFotos(prev => prev.map(p => 
+            p.id === photo.id ? { ...p, url: preview, loading: false } : p
+          ));
+        } catch (err) {
+          console.error("Error al procesar foto:", err);
+          setFotos(prev => prev.filter(p => p.id !== photo.id));
+        }
+      });
+
+      await Promise.all(processingPromises);
+    } catch (err) {
+      console.error("Error en procesamiento paralelo:", err);
+    }
   };
 
   const removeFoto = (index) => {
+    const fotoToRemove = fotos[index];
+    
+    // Liberar memoria si es un ObjectURL
+    if (fotoToRemove.isNew && fotoToRemove.url.startsWith('blob:')) {
+      URL.revokeObjectURL(fotoToRemove.url);
+    }
+
     const newFotos = [...fotos];
     newFotos.splice(index, 1);
     setFotos(newFotos);
+
+    if (fotoToRemove.isNew) {
+      setFotosFiles(prev => {
+        // Encontrar índice en el array de archivos
+        const oldFotosCount = fotos.filter(f => !f.isNew).length;
+        const fileIndex = index - oldFotosCount;
+        return prev.filter((_, i) => i !== fileIndex);
+      });
+    }
   };
 
   const internalOnSubmit = (data) => {
@@ -142,6 +205,12 @@ const FormularioAnuncio = ({ initialData, onSubmit, loading }) => {
           <HiLocationMarker className="text-2xl" />
           <h3 className="text-xl font-black text-slate-800 tracking-tight">Ubicación Exacta</h3>
         </div>
+
+        <div className="mb-6">
+          <label className="block text-sm font-bold text-slate-700 mb-4 ml-1">Ubicación en el Mapa (Opcional)</label>
+          <MapPicker lat={lat} lng={lng} onChange={handleMapChange} />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Zona / Barrio</label>
@@ -235,12 +304,24 @@ const FormularioAnuncio = ({ initialData, onSubmit, loading }) => {
         <h3 className="text-xl font-black text-slate-800 tracking-tight">Fotos del Lugar</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {fotos.map((foto, index) => (
-            <div key={index} className="relative group aspect-square rounded-3xl overflow-hidden border border-slate-100 shadow-sm">
-              <img src={foto.url_foto || foto.url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Preview" />
+            <div key={foto.id || index} className="relative group aspect-square rounded-3xl overflow-hidden border border-slate-100 shadow-sm bg-slate-50 flex items-center justify-center">
+              {foto.loading && (
+                <div className="absolute inset-0 z-10 bg-white/60 flex items-center justify-center backdrop-blur-[2px]">
+                  <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent animate-spin rounded-full"></div>
+                </div>
+              )}
+              <img 
+                src={foto.url_foto || foto.url} 
+                className={`w-full h-full object-cover transition-all duration-500 ${foto.loading ? 'blur-sm grayscale' : 'group-hover:scale-110'}`} 
+                alt=""
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/300x300?text=Error+al+cargar';
+                }}
+              />
               <button 
                 type="button"
                 onClick={() => removeFoto(index)}
-                className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-red-500 rounded-xl p-2 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50"
+                className="absolute top-2 right-2 z-20 bg-white/90 backdrop-blur-sm text-red-500 rounded-xl p-2 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 shadow-lg"
               >
                 <HiX className="text-xl" />
               </button>
@@ -285,10 +366,10 @@ const FormularioAnuncio = ({ initialData, onSubmit, loading }) => {
         </button>
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || compressing}
           className="btn-primary min-w-[200px]"
         >
-          {loading ? 'Procesando...' : initialData ? 'Actualizar Anuncio' : 'Publicar Anuncio Ahora'}
+          {compressing ? 'Procesando fotos...' : loading ? 'Procesando...' : initialData ? 'Actualizar Anuncio' : 'Publicar Anuncio Ahora'}
         </button>
       </div>
     </form>

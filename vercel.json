@@ -1,18 +1,5 @@
 {
   "version": 2,
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "alquiler-nueva-cajamarca.vercel.app"
-        }
-      ],
-      "destination": "https://alquilernc.vercel.app/$1",
-      "permanent": true
-    }
-  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/((?!api|assets|.*\\..*).*)", "destination": "/index.html" }

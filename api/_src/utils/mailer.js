@@ -1,50 +1,46 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 
 /**
- * Resend client — usa la env var RESEND_API_KEY
- * Genera una API key en: https://resend.com/api-keys
+ * Nodemailer Transporter — Gmail SMTP
+ * Variables de entorno requeridas en Vercel:
+ *   MAIL_USER = cabreracristhian662@gmail.com
+ *   MAIL_PASS = (App Password de Google, 16 caracteres sin espacios)
  */
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  host:   'smtp.gmail.com',
+  port:   465,
+  secure: true,
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
 
 /**
- * Dirección "from" — debe ser un dominio verificado en Resend.
- * Mientras no tengas dominio propio verificado, usa onboarding@resend.dev (solo para pruebas a tu propio email).
- * En producción: algo como "Alquiler NC <no-reply@tudominio.com>"
- */
-const FROM_ADDRESS = process.env.RESEND_FROM || 'Alquiler NC <onboarding@resend.dev>';
-
-/**
- * Envía un email usando la API de Resend.
+ * Envía un email.
  * @param {{ to: string, subject: string, html: string, text?: string }} options
  */
 const sendEmail = async (options) => {
+  const mailOptions = {
+    from:    `"Alquiler NC" <${process.env.MAIL_USER}>`,
+    to:      options.to,
+    subject: options.subject,
+    html:    options.html,
+    text:    options.text,
+  };
+
   try {
-    const { data, error } = await resend.emails.send({
-      from: FROM_ADDRESS,
-      to:      options.to,
-      subject: options.subject,
-      html:    options.html,
-      text:    options.text,
-    });
-
-    if (error) {
-      console.error('Resend error:', error);
-      throw new Error(error.message || 'Error enviando email con Resend');
-    }
-
-    console.log('Email enviado con Resend. ID:', data?.id);
-    return data;
-  } catch (err) {
-    console.error('Error en sendEmail (Resend):', err.message);
-    throw err;
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email enviado:', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Error enviando email:', error);
+    throw error;
   }
 };
 
 /**
- * Template HTML simple — usado por resendVerificationCode y requestPasswordReset.
- * @param {string} title   - Título del email
- * @param {string} content - Cuerpo HTML interno
- * @returns {string} HTML completo
+ * Template HTML simple reutilizable.
  */
 const simpleTemplate = (title, content) => `
 <!DOCTYPE html>

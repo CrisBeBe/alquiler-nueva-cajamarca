@@ -8,6 +8,7 @@ import api from '../services/api';
 
 import GaleriaFotos from '../components/GaleriaFotos';
 import StaticMap from '../components/StaticMap';
+import SEOHead from '../components/SEOHead';
 
 const AnuncioDetalle = () => {
   const { id } = useParams();
@@ -43,8 +44,20 @@ const AnuncioDetalle = () => {
   if (loading) return <div className="text-center py-20">Cargando detalles...</div>;
   if (!anuncio) return <div className="text-center py-20">Anuncio no encontrado.</div>;
 
+  const seoTitle = `${anuncio.titulo} - Alquiler en ${anuncio.zona}, Nueva Cajamarca | Alquiler NC`;
+  const seoDescription = `${anuncio.tipo?.charAt(0).toUpperCase() + anuncio.tipo?.slice(1)} en alquiler en ${anuncio.zona}, Nueva Cajamarca. ${anuncio.descripcion?.substring(0, 120)}... Precio: S/ ${anuncio.precio_mensual}/mes.`;
+  const seoKeywords = `alquiler ${anuncio.tipo} nueva cajamarca, ${anuncio.zona} nueva cajamarca, alquiler inmueble nueva cajamarca, ${anuncio.titulo}`;
+
   return (
     <div className="max-w-5xl mx-auto animate-fade-in">
+      <SEOHead
+        title={seoTitle}
+        description={seoDescription}
+        keywords={seoKeywords}
+        url={`https://alquilernc.vercel.app/anuncio/${anuncio.id}`}
+        image={anuncio.fotos?.[0]?.url || 'https://alquilernc.vercel.app/qr_apoyo.jpeg'}
+        type="article"
+      />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Side: Images & Info */}
         <div className="lg:col-span-2">

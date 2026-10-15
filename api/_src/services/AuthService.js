@@ -12,7 +12,7 @@ class AuthService {
 
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(userData.password, salt);
-    
+
     // Generate verification token (6 digits)
     const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -21,18 +21,58 @@ class AuthService {
       password_hash,
       nombre_completo: userData.nombre_completo,
       telefono: userData.telefono,
+      tipo_usuario: userData.tipo_usuario || null,
       token_verificacion: verificationToken,
       email_verificado: false
     });
 
-    // Send verification email
-    const html = simpleTemplate(
-      'Verifica tu Correo',
-      `<p>Hola <strong>${user.nombre_completo}</strong>,</p>
-       <p>Gracias por registrarte en Alquiler NC. Tu código de verificación es:</p>
-       <h1 style="font-size: 32px; letter-spacing: 5px; color: #007bff; text-align: center;">${verificationToken}</h1>
-       <p>Ingresa este código en la plataforma para activar tu cuenta.</p>`
-    );
+    // Send verification email — rich HTML template
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+</head>
+<body style='margin:0;padding:0;background:#f8fafc;font-family:Arial,sans-serif;'>
+  <div style='max-width:600px;margin:40px auto;background:white;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);'>
+
+    <!-- Header -->
+    <div style='background:linear-gradient(135deg,#10b981,#059669);padding:40px;text-align:center;'>
+      <h1 style='color:white;margin:0;font-size:28px;font-weight:900;'>🏠 Alquiler NC</h1>
+      <p style='color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:14px;'>Nueva Cajamarca, San Martín, Perú</p>
+    </div>
+
+    <!-- Body -->
+    <div style='padding:48px 40px;'>
+      <h2 style='color:#1e293b;font-size:22px;font-weight:800;margin:0 0 16px;'>¡Bienvenido/a, ${user.nombre_completo}! 🎉</h2>
+      <p style='color:#64748b;font-size:16px;line-height:1.6;margin:0 0 32px;'>
+        Gracias por unirte a la plataforma de alquiler más completa de Nueva Cajamarca.
+        Solo un paso más: verifica tu correo.
+      </p>
+
+      <!-- Code box -->
+      <div style='background:#f0fdf4;border:2px solid #10b981;border-radius:16px;padding:32px;text-align:center;margin:0 0 32px;'>
+        <p style='color:#059669;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;'>
+          Tu código de verificación
+        </p>
+        <div style='font-size:48px;font-weight:900;color:#10b981;letter-spacing:12px;'>${verificationToken}</div>
+        <p style='color:#94a3b8;font-size:12px;margin:12px 0 0;'>Válido por 24 horas</p>
+      </div>
+
+      <p style='color:#64748b;font-size:14px;line-height:1.6;'>
+        Ingresa este código en la plataforma para activar tu cuenta y empezar a
+        publicar o encontrar alquileres.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div style='background:#f8fafc;padding:24px 40px;text-align:center;border-top:1px solid #e2e8f0;'>
+      <p style='color:#94a3b8;font-size:12px;margin:0;'>© 2026 Alquiler NC — Nueva Cajamarca, Perú</p>
+      <p style='color:#94a3b8;font-size:12px;margin:4px 0 0;'>Si no creaste esta cuenta, ignora este correo.</p>
+    </div>
+  </div>
+</body>
+</html>`;
 
     await sendEmail({
       to: user.email,
@@ -40,9 +80,9 @@ class AuthService {
       html
     }).catch(err => console.error('Error enviando email de verificación:', err));
 
-    return { 
+    return {
       message: 'Usuario registrado. Por favor verifica tu correo con el código enviado.',
-      email: user.email 
+      email: user.email
     };
   }
 
@@ -129,7 +169,7 @@ class AuthService {
     // En un caso real, generaríamos un token temporal guardado en DB o Redis
     // Por ahora, usaremos un JWT corto (15 min)
     const resetToken = generateToken({ id: user.id, purpose: 'password_reset' });
-    
+
     // Simular envío de correo
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
     const html = simpleTemplate(

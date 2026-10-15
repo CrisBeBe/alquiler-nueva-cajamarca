@@ -3,6 +3,7 @@ import { useAnuncios } from '../context/AnuncioContext';
 import CardAnuncio from '../components/CardAnuncio';
 import FiltrosBuscador from '../components/FiltrosBuscador';
 import SkeletonCard from '../components/SkeletonCard';
+import SEOHead from '../components/SEOHead';
 import { HiSearch, HiSparkles } from 'react-icons/hi';
 
 const Home = () => {
@@ -14,6 +15,12 @@ const Home = () => {
 
   return (
     <div className="space-y-16">
+      <SEOHead
+        title="Alquiler de Casas y Cuartos en Nueva Cajamarca | Alquiler NC"
+        description="Encuentra habitaciones, departamentos y casas de alquiler en Nueva Cajamarca, San Martín, Perú. Más de 100 anuncios verificados. ¡Publica gratis!"
+        keywords="alquiler nueva cajamarca, casas alquiler, cuartos alquiler nueva cajamarca, departamentos san martin peru, alquiler inmuebles nueva cajamarca, habitaciones nueva cajamarca"
+        url="https://alquilernc.vercel.app"
+      />
       {/* Hero Section */}
       <section className="relative py-12 text-center overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary-100/30 blur-[120px] rounded-full -z-10"></div>

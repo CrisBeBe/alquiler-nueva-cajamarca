@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import MainLayout from './layouts/MainLayout';
+import WhatsAppButton from './components/WhatsAppButton';
 
 // Lazy loaded components for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -109,6 +110,7 @@ function App() {
           } />
         </Route>
       </Routes>
+      <WhatsAppButton phoneNumber="51942000000" message="¡Hola! Encontré tu plataforma Alquiler NC y tengo una consulta." />
     </Suspense>
   );
 }

@@ -1,52 +1,34 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const createTransporter = () => {
-  const host = process.env.MAIL_HOST || 'smtp.gmail.com';
-  const port = parseInt(process.env.MAIL_PORT, 10) || 465;
-  const rawPass = process.env.MAIL_PASS || '';
-  // Limpiar espacios en blanco de contraseñas de app de Google (ej: "abcd efgh ijkl mnop" -> "abcdefghijklmnop")
-  const cleanPass = rawPass.replace(/\s+/g, '');
+// Obtener la clave exclusivamente de las variables de entorno de Vercel
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-  if (host.includes('gmail.com') || !process.env.MAIL_HOST) {
-    return nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: cleanPass,
-      },
-    });
-  }
+const FROM_ADDRESS = process.env.RESEND_FROM || 'Alquiler NC <onboarding@resend.dev>';
 
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure: process.env.MAIL_SECURE === 'true' || port === 465,
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: cleanPass,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
-};
-
+/**
+ * Enviar correo electrónico con Resend
+ */
 const sendEmail = async (options) => {
-  const transporter = createTransporter();
-  const fromName = process.env.MAIL_FROM_NAME || 'Alquiler NC';
-  const fromAddress = process.env.MAIL_FROM_ADDRESS || process.env.MAIL_USER;
+  try {
+    const { data, error } = await resend.emails.send({
+      from:    FROM_ADDRESS,
+      to:      options.to,
+      subject: options.subject,
+      html:    options.html,
+      text:    options.text,
+    });
 
-  const mailOptions = {
-    from:    `"${fromName}" <${fromAddress}>`,
-    to:      options.to,
-    subject: options.subject,
-    html:    options.html,
-    text:    options.text,
-  };
+    if (error) {
+      console.error('Error de Resend al enviar correo:', error);
+      throw error;
+    }
 
-  const info = await transporter.sendMail(mailOptions);
-  console.log('Email enviado exitosamente:', info.messageId);
-  return info;
+    console.log('Correo enviado con éxito vía Resend. ID:', data?.id);
+    return data;
+  } catch (err) {
+    console.error('Error en sendEmail:', err.message);
+    throw err;
+  }
 };
 
 const simpleTemplate = (title, content) => `

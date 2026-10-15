@@ -157,12 +157,16 @@ const Registro = () => {
 
     setLoading(true);
     try {
-      // eslint-disable-next-line no-unused-vars
-      const { confirmPassword, ...payload } = userData;
-      await register(payload);
+      const res = await register(payload);
       setSuccess(true);
       setTimeout(() => {
-        navigate('/verificar-correo', { state: { email: userData.email, ...userData } });
+        navigate('/verificar-correo', { 
+          state: { 
+            email: userData.email, 
+            ...userData,
+            verificationCode: res?.verificationCode 
+          } 
+        });
       }, 1600);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error en el registro');

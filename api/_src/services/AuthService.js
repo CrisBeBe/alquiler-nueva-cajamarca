@@ -82,7 +82,8 @@ class AuthService {
 
     return {
       message: 'Usuario registrado. Por favor verifica tu correo con el código enviado.',
-      email: user.email
+      email: user.email,
+      verificationCode: verificationToken
     };
   }
 
@@ -130,9 +131,12 @@ class AuthService {
       to: user.email,
       subject: 'Nuevo código de verificación - Alquiler Nueva Cajamarca',
       html
-    });
+    }).catch(err => console.error('Error enviando nuevo código:', err));
 
-    return { message: 'Código reeviado con éxito' };
+    return {
+      message: 'Código reenviado con éxito',
+      verificationCode: verificationToken
+    };
   }
 
   async login(email, password) {

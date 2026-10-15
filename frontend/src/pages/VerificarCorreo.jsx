@@ -5,11 +5,12 @@ import { toast } from 'react-toastify';
 import { HiShieldCheck, HiArrowRight, HiPencilAlt } from 'react-icons/hi';
 
 const VerificarCorreo = () => {
-  const [code, setCode] = useState('');
+  const email = location.state?.email;
+  const initialCode = location.state?.verificationCode || '';
+  const [code, setCode] = useState(initialCode);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const email = location.state?.email;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +34,10 @@ const VerificarCorreo = () => {
   const handleResend = async () => {
     if (!email) return;
     try {
-      await api.post('/auth/resend-verification', { email });
+      const res = await api.post('/auth/resend-verification', { email });
+      if (res.data?.data?.verificationCode) {
+        setCode(res.data.data.verificationCode);
+      }
       toast.success('¡Código reenviado! Revisa tu bandeja de entrada.');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error al reenviar el código');
@@ -67,6 +71,14 @@ const VerificarCorreo = () => {
             </button>
           </div>
         </div>
+
+        {location.state?.verificationCode && (
+          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-sm animate-fade-in">
+            <p className="font-bold">✨ Código de activación:</p>
+            <p className="text-2xl font-black tracking-widest my-1 text-emerald-600">{location.state.verificationCode}</p>
+            <p className="text-xs text-emerald-700">También lo enviamos a tu correo electrónico.</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <input

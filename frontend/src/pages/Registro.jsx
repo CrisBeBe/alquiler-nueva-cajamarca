@@ -169,7 +169,8 @@ const Registro = () => {
         });
       }, 1600);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Error en el registro');
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Error en el registro';
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

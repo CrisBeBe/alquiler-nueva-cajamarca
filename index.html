@@ -18,23 +18,105 @@
     <meta name="rating" content="General" />
     <meta name="revisit-after" content="1 days" />
     
-    <!-- Structured Data -->
+    <!-- Structured Data: LocalBusiness -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "LocalBusiness",
+      "@type": "RealEstateAgent",
       "name": "Alquiler NC",
+      "alternateName": "Alquiler Nueva Cajamarca",
       "image": "https://alquilernc.vercel.app/qr_apoyo.jpeg",
-      "description": "Alquila casas, cuartos y locales en Nueva Cajamarca, San Martín. Encuentra los mejores precios y contacta directamente con los dueños.",
+      "logo": "https://alquilernc.vercel.app/brand-logo-nc.svg",
+      "description": "Plataforma líder de alquiler de casas, cuartos, departamentos y locales comerciales en Nueva Cajamarca, San Martín, Perú. Conectamos propietarios e inquilinos sin intermediarios.",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Nueva Cajamarca",
         "addressRegion": "San Martín",
-        "addressCountry": "PE"
+        "addressCountry": "PE",
+        "postalCode": "22301"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "-5.9392",
+        "longitude": "-77.3114"
       },
       "url": "https://alquilernc.vercel.app/",
       "telephone": "+51916225416",
-      "priceRange": "S/100 - S/2000"
+      "priceRange": "S/150 - S/2000",
+      "openingHours": "Mo-Su 00:00-23:59",
+      "areaServed": {
+        "@type": "City",
+        "name": "Nueva Cajamarca",
+        "containedInPlace": {
+          "@type": "AdministrativeArea",
+          "name": "San Martín, Perú"
+        }
+      },
+      "sameAs": [
+        "https://alquilernc.vercel.app"
+      ]
+    }
+    </script>
+
+    <!-- Structured Data: WebSite con SearchAction -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Alquiler NC",
+      "url": "https://alquilernc.vercel.app",
+      "description": "Encuentra alquiler de casas, cuartos y departamentos en Nueva Cajamarca, San Martín, Perú",
+      "inLanguage": "es-PE",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://alquilernc.vercel.app/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Structured Data: FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Cuánto cuesta alquilar en Nueva Cajamarca?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "En Nueva Cajamarca, un cuarto cuesta entre S/ 150 y S/ 400 al mes. Un departamento entre S/ 400 y S/ 800. Una casa desde S/ 600 hasta S/ 1,500 según tamaño y zona."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Dónde encontrar alquiler en Nueva Cajamarca?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "En Alquiler NC (alquilernc.vercel.app) puedes encontrar cuartos, departamentos, casas y locales en alquiler en Nueva Cajamarca, San Martín, Perú. Es la plataforma líder de alquileres en la ciudad."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Hay cuartos baratos en alquiler en Nueva Cajamarca?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí, en Alquiler NC encontrarás habitaciones económicas desde S/ 150 al mes en diferentes zonas de Nueva Cajamarca: Centro, Norte, Sur, Este y Oeste."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo publicar mi inmueble en alquiler gratis en Nueva Cajamarca?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí, en Alquiler NC puedes publicar tu casa, cuarto, departamento o local en alquiler de forma completamente gratuita. Solo regístrate y sube tus fotos."
+          }
+        }
+      ]
     }
     </script>
     <meta name="google-site-verification" content="google54207518d08b7ed1" />

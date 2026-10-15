@@ -1,25 +1,51 @@
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-  host:   'smtp.gmail.com',
-  port:   465,
-  secure: true,
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+const createTransporter = () => {
+  const host = process.env.MAIL_HOST || 'smtp.gmail.com';
+  const port = parseInt(process.env.MAIL_PORT, 10) || 465;
+  const rawPass = process.env.MAIL_PASS || '';
+  // Limpiar espacios en blanco de contraseñas de app de Google (ej: "abcd efgh ijkl mnop" -> "abcdefghijklmnop")
+  const cleanPass = rawPass.replace(/\s+/g, '');
+
+  if (host.includes('gmail.com') || !process.env.MAIL_HOST) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: cleanPass,
+      },
+    });
+  }
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure: process.env.MAIL_SECURE === 'true' || port === 465,
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: cleanPass,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+};
 
 const sendEmail = async (options) => {
+  const transporter = createTransporter();
+  const fromName = process.env.MAIL_FROM_NAME || 'Alquiler NC';
+  const fromAddress = process.env.MAIL_FROM_ADDRESS || process.env.MAIL_USER;
+
   const mailOptions = {
-    from:    `"Alquiler NC" <${process.env.MAIL_USER}>`,
+    from:    `"${fromName}" <${fromAddress}>`,
     to:      options.to,
     subject: options.subject,
     html:    options.html,
     text:    options.text,
   };
+
   const info = await transporter.sendMail(mailOptions);
-  console.log('Email enviado:', info.messageId);
+  console.log('Email enviado exitosamente:', info.messageId);
   return info;
 };
 

@@ -126,6 +126,50 @@ app.get(['/api/health', '/health'], async (req, res) => {
   }
 });
 
+// Diagnostic email test
+app.get(['/api/test-email', '/test-email'], async (req, res) => {
+  const { sendEmail } = require('./_src/utils/mailer');
+  const targetEmail = req.query.to || process.env.MAIL_USER || 'cabreracristhian662@gmail.com';
+  
+  const envStatus = {
+    hasMailUser: !!process.env.MAIL_USER,
+    mailUser: process.env.MAIL_USER || 'NO_CONFIGURADO',
+    hasMailPass: !!process.env.MAIL_PASS,
+    mailPassLength: process.env.MAIL_PASS ? process.env.MAIL_PASS.length : 0,
+    mailHost: process.env.MAIL_HOST || 'default: smtp.gmail.com',
+    mailPort: process.env.MAIL_PORT || 'default: 465',
+    mailSecure: process.env.MAIL_SECURE || 'default: true'
+  };
+
+  try {
+    const result = await sendEmail({
+      to: targetEmail,
+      subject: 'Prueba de Diagnóstico - Alquiler NC',
+      html: '<h1>¡El sistema de correo funciona correctamente!</h1><p>Prueba enviada desde Alquiler NC.</p>'
+    });
+
+    res.status(200).json({
+      status: 'SUCCESS',
+      message: `Correo enviado exitosamente a ${targetEmail}`,
+      envStatus,
+      result
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Fallo al enviar correo',
+      envStatus,
+      error: {
+        message: err.message,
+        code: err.code,
+        response: err.response,
+        responseCode: err.responseCode,
+        command: err.command
+      }
+    });
+  }
+});
+
 app.use('/api', routes);
 app.use('/', routes); // Fallback for when /api is stripped by Vercel
 

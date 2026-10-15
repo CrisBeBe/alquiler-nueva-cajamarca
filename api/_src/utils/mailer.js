@@ -1,63 +1,80 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 /**
- * Nodemailer Transporter Configuration
+ * Resend client — usa la env var RESEND_API_KEY
+ * Genera una API key en: https://resend.com/api-keys
  */
-const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
-  secure: process.env.MAIL_SECURE === 'true', // true for 465, false for other ports
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
- * Send an email
- * @param {Object} options - Email options (to, subject, text, html)
+ * Dirección "from" — debe ser un dominio verificado en Resend.
+ * Mientras no tengas dominio propio verificado, usa onboarding@resend.dev (solo para pruebas a tu propio email).
+ * En producción: algo como "Alquiler NC <no-reply@tudominio.com>"
+ */
+const FROM_ADDRESS = process.env.RESEND_FROM || 'Alquiler NC <onboarding@resend.dev>';
+
+/**
+ * Envía un email usando la API de Resend.
+ * @param {{ to: string, subject: string, html: string, text?: string }} options
  */
 const sendEmail = async (options) => {
-  const mailOptions = {
-    from: `"${process.env.MAIL_FROM_NAME || 'Alquiler Nueva Cajamarca'}" <${process.env.MAIL_FROM_ADDRESS || process.env.MAIL_USER}>`,
-    to: options.to,
-    subject: options.subject,
-    text: options.text,
-    html: options.html
-  };
-
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email enviado: %s', info.messageId);
-    return info;
-  } catch (error) {
-    console.error('Error enviando email:', error);
-    throw error;
+    const { data, error } = await resend.emails.send({
+      from: FROM_ADDRESS,
+      to:      options.to,
+      subject: options.subject,
+      html:    options.html,
+      text:    options.text,
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      throw new Error(error.message || 'Error enviando email con Resend');
+    }
+
+    console.log('Email enviado con Resend. ID:', data?.id);
+    return data;
+  } catch (err) {
+    console.error('Error en sendEmail (Resend):', err.message);
+    throw err;
   }
 };
 
 /**
- * Simple Template Helper
- * @param {string} title - Email title
- * @param {string} content - Main content of the email
- * @returns {string} - HTML string
+ * Template HTML simple — usado por resendVerificationCode y requestPasswordReset.
+ * @param {string} title   - Título del email
+ * @param {string} content - Cuerpo HTML interno
+ * @returns {string} HTML completo
  */
-const simpleTemplate = (title, content) => {
-  return `
-    <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px;">
-      <h2 style="color: #333;">${title}</h2>
-      <div style="color: #555; line-height: 1.6;">
+const simpleTemplate = (title, content) => `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:Arial,sans-serif;">
+  <div style="max-width:600px;margin:40px auto;background:white;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+    <div style="background:linear-gradient(135deg,#10b981,#059669);padding:32px 40px;">
+      <h1 style="color:white;margin:0;font-size:24px;font-weight:900;">🏠 Alquiler NC</h1>
+      <p style="color:rgba(255,255,255,0.85);margin:6px 0 0;font-size:13px;">Nueva Cajamarca, San Martín, Perú</p>
+    </div>
+    <div style="padding:40px;">
+      <h2 style="color:#1e293b;font-size:20px;font-weight:800;margin:0 0 16px;">${title}</h2>
+      <div style="color:#64748b;font-size:15px;line-height:1.7;">
         ${content}
       </div>
-      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-      <p style="font-size: 12px; color: #999;">
-        Este es un correo automático de Alquiler Nueva Cajamarca. Por favor no responda.
-      </p>
     </div>
-  `;
-};
+    <div style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e2e8f0;">
+      <p style="color:#94a3b8;font-size:12px;margin:0;">© ${new Date().getFullYear()} Alquiler NC — Nueva Cajamarca, Perú</p>
+      <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Este es un correo automático. Por favor no respondas.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
 
 module.exports = {
   sendEmail,
-  simpleTemplate
+  simpleTemplate,
 };

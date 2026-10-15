@@ -112,7 +112,7 @@ const Registro = () => {
       uppercase:     /[A-Z]/.test(password),
       lowercase:     /[a-z]/.test(password),
       number:        /[0-9]/.test(password),
-      special:       /[!@#$%^&*]/.test(password),
+      special:       /[^a-zA-Z0-9]/.test(password),
       phone:         /^9\d{8}$/.test(telefono),
       passwordMatch: password.length > 0 && password === confirmPassword,
       emailValid:    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && !/\s/.test(email),
@@ -157,6 +157,7 @@ const Registro = () => {
 
     setLoading(true);
     try {
+      const { confirmPassword, ...payload } = userData;
       const res = await register(payload);
       setSuccess(true);
       setTimeout(() => {
@@ -169,7 +170,8 @@ const Registro = () => {
         });
       }, 1600);
     } catch (error) {
-      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Error en el registro';
+      console.error('Error registrando usuario:', error);
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message || 'Error en el registro';
       toast.error(errorMsg);
     } finally {
       setLoading(false);

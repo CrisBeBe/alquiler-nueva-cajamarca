@@ -14,7 +14,7 @@ const registerValidator = [
     .matches(/[a-z]/).withMessage('La contraseña debe contener al menos una minúscula')
     .matches(/[A-Z]/).withMessage('La contraseña debe contener al menos una mayúscula')
     .matches(/[0-9]/).withMessage('La contraseña debe contener al menos un número')
-    .matches(/[!@#$%^&*]/).withMessage('La contraseña debe tener al menos un carácter especial (!@#$%^&*)'),
+    .matches(/[^a-zA-Z0-9]/).withMessage('La contraseña debe tener al menos un carácter especial (!@#$%^&*.,-_)'),
 
   body('nombre_completo')
     .notEmpty().withMessage('El nombre completo es obligatorio')
